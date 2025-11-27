@@ -154,7 +154,7 @@ export const PresetSection: React.FC<PresetSectionProps> = ({
               <DeleteIcon fontSize='medium' />
             </IconButton>
             <Button variant='outlined' size='medium' startIcon={<AddIcon />} onClick={openCreatePresetDialog}>
-              CREATE PRESET
+              ДОБАВИТЬ ПРЕСЕТ
             </Button>
           </Stack>
         </Stack>

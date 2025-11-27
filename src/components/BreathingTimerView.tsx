@@ -53,14 +53,13 @@ export const BreathingTimerView: React.FC<BreathingTimerViewProps> = ({
   const hasHours = displayTime >= 3600;
   const hasMinutes = !hasHours && displayTime >= 60;
 
-  // секунды — самый крупный, минуты чуть меньше, часы ещё меньше
-  const fontSize = hasHours ? '2.2rem' : hasMinutes ? '3.0rem' : '3.6rem';
+  const fontSize = hasHours ? '1.9rem' : hasMinutes ? '2.4rem' : '3.6rem';
 
   return (
     <Container maxWidth='sm'>
       <Box sx={{ textAlign: 'center', py: 4 }}>
         <Typography variant='h4' gutterBottom>
-          {currentStage ? currentStage.name : 'Добавьте этапы дыхания'}
+          {currentStage ? currentStage.name : 'Добавьте этапы'}
         </Typography>
 
         <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>

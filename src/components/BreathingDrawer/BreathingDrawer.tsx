@@ -146,7 +146,7 @@ export const BreathingDrawer: React.FC<BreathingDrawerProps> = ({
 
         <Box sx={{ p: 3, height: '100%', boxSizing: 'border-box' }}>
           <Typography variant='h6' gutterBottom>
-            Настройки дыхания
+            Настройки таймера
           </Typography>
 
           <PresetSection
