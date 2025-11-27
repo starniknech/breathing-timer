@@ -1,3 +1,4 @@
+// hooks/useBreathingTimer.ts
 import { useEffect, useMemo, useState } from 'react';
 import { Stage } from '../types/breathing';
 
@@ -13,7 +14,13 @@ export type BreathingTimerResult = {
   reset: () => void;
 };
 
-export const useBreathingTimer = (stages: Stage[], rounds: number): BreathingTimerResult => {
+type StageCompleteCallback = (finishedStage: Stage, round: number, nextStage: Stage | null) => void;
+
+export const useBreathingTimer = (
+  stages: Stage[],
+  rounds: number,
+  onStageComplete?: StageCompleteCallback,
+): BreathingTimerResult => {
   const [currentRound, setCurrentRound] = useState<number>(1);
   const [currentStageIndex, setCurrentStageIndex] = useState<number>(0);
   const [isRunning, setIsRunning] = useState<boolean>(false);
@@ -22,6 +29,7 @@ export const useBreathingTimer = (stages: Stage[], rounds: number): BreathingTim
 
   const currentStage = useMemo(() => stages[currentStageIndex] ?? null, [stages, currentStageIndex]);
 
+  // ресет индекса, если изменилось количество стадий
   useEffect(() => {
     if (!stages.length) {
       setIsRunning(false);
@@ -38,6 +46,7 @@ export const useBreathingTimer = (stages: Stage[], rounds: number): BreathingTim
     });
   }, [stages.length]);
 
+  // сам таймер (requestAnimationFrame)
   useEffect(() => {
     if (!isRunning) return;
     if (!currentStage) return;
@@ -59,19 +68,39 @@ export const useBreathingTimer = (stages: Stage[], rounds: number): BreathingTim
     return () => cancelAnimationFrame(frameId);
   }, [isRunning, currentStageIndex, currentRound, stages.length, currentStage]);
 
+  // переходы между этапами/кругами + КОЛБЭК завершения этапа
   useEffect(() => {
     if (!isRunning) return;
     const stage = currentStage;
     if (!stage) return;
 
     const durationMs = stage.duration * 1000;
-
     if (stageElapsedMs < durationMs) return;
 
-    if (currentStageIndex < stages.length - 1) {
+    const finishedStage = stage;
+    const isLastStageInRound = currentStageIndex === stages.length - 1;
+    const isLastRound = currentRound === rounds;
+
+    let nextStage: Stage | null = null;
+
+    if (!isLastStageInRound) {
+      nextStage = stages[currentStageIndex + 1];
+    } else if (!isLastRound) {
+      nextStage = stages[0];
+    } else {
+      nextStage = null;
+    }
+
+    // 👉 вызываем колбэк именно в момент завершения stage
+    if (onStageComplete) {
+      onStageComplete(finishedStage, currentRound, nextStage);
+    }
+
+    // дальше уже переключаем состояние
+    if (!isLastStageInRound) {
       setCurrentStageIndex(currentStageIndex + 1);
       setStageElapsedMs(0);
-    } else if (currentRound < rounds) {
+    } else if (!isLastRound) {
       setCurrentRound(currentRound + 1);
       setCurrentStageIndex(0);
       setStageElapsedMs(0);
@@ -79,7 +108,7 @@ export const useBreathingTimer = (stages: Stage[], rounds: number): BreathingTim
       setIsRunning(false);
       setIsCompleted(true);
     }
-  }, [stageElapsedMs, isRunning, currentStage, currentStageIndex, currentRound, rounds, stages.length]);
+  }, [stageElapsedMs, isRunning, currentStage, currentStageIndex, currentRound, rounds, stages, onStageComplete]);
 
   const elapsedSec = stageElapsedMs / 1000;
   const durationSec = currentStage?.duration ?? 1;

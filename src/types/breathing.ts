@@ -15,6 +15,7 @@ export interface Stage {
   name: string;
   duration: number;
   color: ColorEnum;
+  sound?: SoundEffect;
 }
 
 export interface Preset {
@@ -23,4 +24,11 @@ export interface Preset {
   color: ColorEnum;
   stages: Stage[];
   rounds: number;
+}
+
+export enum SoundEffect {
+  NONE = 'none',
+  MARIMBA = 'sound1',
+  RINGTONE = 'sound2',
+  TIMER_TICK = 'sound3',
 }
