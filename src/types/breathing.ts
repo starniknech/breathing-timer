@@ -16,3 +16,11 @@ export interface Stage {
   duration: number;
   color: ColorEnum;
 }
+
+export interface Preset {
+  id: string;
+  name: string;
+  color: ColorEnum;
+  stages: Stage[];
+  rounds: number;
+}
