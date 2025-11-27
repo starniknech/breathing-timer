@@ -1,4 +1,4 @@
-import { ColorEnum, Preset, Stage } from '../types/breathing';
+import { ColorEnum, Preset, SoundEffect, Stage } from '../types/breathing';
 
 export const colorMap: Record<ColorEnum, string> = {
   [ColorEnum.PURPLE]: '#9c27b0',
@@ -30,12 +30,14 @@ export const DEFAULT_STAGES: Stage[] = [
     name: 'Вдох',
     duration: 4,
     color: ColorEnum.PURPLE,
+    sound: SoundEffect.NONE,
   },
   {
     id: 'exhale-7',
     name: 'Выдох',
     duration: 7,
     color: ColorEnum.GREEN,
+    sound: SoundEffect.NONE,
   },
 ];
 

@@ -9,12 +9,27 @@ type BreathingTimerViewProps = {
   currentStage: Stage | null;
   currentRound: number;
   rounds: number;
-  displayTime: number;
+  displayTime: number; // секунды
   progressValue: number;
   isRunning: boolean;
   onStart: () => void;
   onPause: () => void;
   onReset: () => void;
+};
+
+const formatTime = (totalSeconds: number): string => {
+  const safe = Math.max(0, Math.floor(totalSeconds));
+  const hours = Math.floor(safe / 3600);
+  const minutes = Math.floor((safe % 3600) / 60);
+  const seconds = safe % 60;
+
+  if (hours > 0) {
+    return `${hours}h, ${minutes}min, ${seconds}s`;
+  }
+  if (minutes > 0) {
+    return `${minutes}min, ${seconds}s`;
+  }
+  return `${seconds}s`;
 };
 
 export const BreathingTimerView: React.FC<BreathingTimerViewProps> = ({
@@ -31,49 +46,40 @@ export const BreathingTimerView: React.FC<BreathingTimerViewProps> = ({
 }) => {
   const circleColor = currentStage ? colorMap[currentStage.color] : '#1976d2';
   const trackColor = mode === 'light' ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.25)';
-
   const stageKey = currentStage ? `${currentStage.id}-${currentRound}` : 'no-stage';
+
+  const formattedTime = formatTime(displayTime);
+
+  const hasHours = displayTime >= 3600;
+  const hasMinutes = !hasHours && displayTime >= 60;
+
+  // секунды — самый крупный, минуты чуть меньше, часы ещё меньше
+  const fontSize = hasHours ? '2.2rem' : hasMinutes ? '3.0rem' : '3.6rem';
 
   return (
     <Container maxWidth='sm'>
-      <Box
-        sx={{
-          textAlign: 'center',
-          py: 4,
-        }}
-      >
+      <Box sx={{ textAlign: 'center', py: 4 }}>
         <Typography variant='h4' gutterBottom>
           {currentStage ? currentStage.name : 'Добавьте этапы дыхания'}
         </Typography>
 
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            mb: 3,
-          }}
-        >
-          <Box
-            sx={{
-              position: 'relative',
-              display: 'inline-flex',
-            }}
-          >
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+          <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+            {/* трек */}
             <CircularProgress
               variant='determinate'
               value={100}
-              size={220}
-              thickness={4}
-              sx={{
-                color: trackColor,
-              }}
+              size={320} // Больше диаметр => больше радиус
+              thickness={6}
+              sx={{ color: trackColor }}
             />
+            {/* прогресс */}
             <CircularProgress
               key={stageKey}
               variant='determinate'
               value={progressValue}
-              size={220}
-              thickness={4}
+              size={320}
+              thickness={6}
               sx={{
                 color: circleColor,
                 position: 'absolute',
@@ -85,6 +91,7 @@ export const BreathingTimerView: React.FC<BreathingTimerViewProps> = ({
               }}
             />
 
+            {/* текст в центре */}
             <Box
               sx={{
                 top: 0,
@@ -98,8 +105,8 @@ export const BreathingTimerView: React.FC<BreathingTimerViewProps> = ({
                 flexDirection: 'column',
               }}
             >
-              <Typography variant='h3' component='div' sx={{ fontWeight: 700 }}>
-                {displayTime}s
+              <Typography component='div' sx={{ fontWeight: 700, fontSize }}>
+                {formattedTime}
               </Typography>
             </Box>
           </Box>

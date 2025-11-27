@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Box, CssBaseline, Fab } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import type { PaletteMode } from '@mui/material';
@@ -7,9 +7,9 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 
 import { BreathingTimerView } from './components/BreathingTimerView';
-import { BreathingDrawer } from './components/BreathingDrawer';
+import { BreathingDrawer } from './components/BreathingDrawer/BreathingDrawer';
 import { useBreathingTimer } from './hooks/useBreathingTimer';
-import { ColorEnum, Stage, Preset } from './types/breathing';
+import { ColorEnum, Stage, Preset, SoundEffect } from './types/breathing';
 import {
   LOCAL_STORAGE_KEY,
   THEME_KEY,
@@ -17,6 +17,7 @@ import {
   loadInitialConfig,
   loadInitialPresets,
 } from './constants/breathing';
+import { playSound } from './utils/soundPlayer';
 
 const initialConfig = loadInitialConfig();
 const initialPresets = loadInitialPresets();
@@ -35,7 +36,14 @@ const App: React.FC = () => {
     return saved === 'dark' || saved === 'light' ? saved : 'light';
   });
 
-  const timer = useBreathingTimer(stages, rounds);
+  const handleStageComplete = (finishedStage: Stage) => {
+    const sound = finishedStage.sound ?? SoundEffect.NONE;
+    if (sound !== SoundEffect.NONE) {
+      playSound(sound);
+    }
+  };
+
+  const timer = useBreathingTimer(stages, rounds, handleStageComplete);
 
   const appTheme = useMemo(
     () =>
@@ -78,7 +86,30 @@ const App: React.FC = () => {
     setRounds(n);
   };
 
-  const handleStageFieldChange = (id: string, field: 'name' | 'duration' | 'color', value: string | number) => {
+  const handleDuplicateStage = (id: string) => {
+    setStages((prev) => {
+      const index = prev.findIndex((s) => s.id === id);
+      if (index === -1) return prev;
+
+      const source = prev[index];
+      const newStage: Stage = {
+        ...source,
+        id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        name: `${source.name} (копия)`,
+        sound: SoundEffect.NONE,
+      };
+
+      const next = [...prev];
+      next.splice(index + 1, 0, newStage);
+      return next;
+    });
+  };
+
+  const handleStageFieldChange = (
+    id: string,
+    field: 'name' | 'duration' | 'color' | 'sound',
+    value: string | number,
+  ) => {
     setStages((prev) =>
       prev.map((stage) => {
         if (stage.id !== id) return stage;
@@ -90,6 +121,10 @@ const App: React.FC = () => {
 
         if (field === 'color') {
           return { ...stage, color: value as ColorEnum };
+        }
+
+        if (field === 'sound') {
+          return { ...stage, sound: value as SoundEffect };
         }
 
         return { ...stage, name: String(value) };
@@ -226,6 +261,7 @@ const App: React.FC = () => {
           onAddStage={handleAddStage}
           onDeleteStage={handleDeleteStage}
           onReorderStages={handleReorderStages}
+          onDuplicateStage={handleDuplicateStage}
           presets={presets}
           selectedPresetId={selectedPresetId}
           onSelectPreset={handleSelectPreset}
