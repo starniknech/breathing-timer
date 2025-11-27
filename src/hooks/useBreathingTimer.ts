@@ -90,14 +90,6 @@ export const useBreathingTimer = (stages: Stage[], rounds: number): BreathingTim
   const clampedElapsed = Math.min(Math.max(elapsedSec, 0), durationSec);
   const progressValue = currentStage ? (clampedElapsed / durationSec) * 100 : 0;
 
-  console.log('[useBreathingTimer] tick', {
-    stage: currentStage?.name,
-    round: currentRound,
-    elapsedSec: Number(elapsedSec.toFixed(2)),
-    displayTime,
-    progressValue: Number(progressValue.toFixed(2)),
-  });
-
   const start = () => {
     if (!stages.length) return;
 
