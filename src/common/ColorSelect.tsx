@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, MenuItem, Select } from '@mui/material';
 import { ColorEnum } from '../types/breathing';
-import { colorLabelMap, colorMap } from '../constants/breathing';
+import { colorLabelMap, colorMap } from '../constants/constants';
 
 type ColorSelectProps = {
   value: ColorEnum;

@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Button, CircularProgress, Container, Stack, Typography } from '@mui/material';
 import type { PaletteMode } from '@mui/material';
 import { Stage } from '../types/breathing';
-import { colorMap } from '../constants/breathing';
+import { colorMap } from '../constants/constants';
 
 type BreathingTimerViewProps = {
   mode: PaletteMode;

@@ -32,3 +32,19 @@ export enum SoundEffect {
   RINGTONE = 'sound2',
   TIMER_TICK = 'sound3',
 }
+
+export type RawStage = {
+  id?: string;
+  name?: string;
+  duration?: number;
+  color?: string;
+  sound?: string;
+};
+
+export type RawPreset = {
+  id?: string;
+  name?: string;
+  color?: string;
+  rounds?: number;
+  stages?: RawStage[];
+};

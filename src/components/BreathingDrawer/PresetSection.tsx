@@ -20,7 +20,7 @@ import AddIcon from '@mui/icons-material/Add';
 
 import type { Preset, ColorEnum } from '../../types/breathing';
 import { ColorSelect } from '../../common/ColorSelect';
-import { colorMap } from '../../constants/breathing';
+import { colorMap } from '../../constants/constants';
 
 type PresetDialogMode = 'create' | 'edit';
 
