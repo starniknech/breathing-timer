@@ -34,13 +34,23 @@ export const StageList: React.FC<StageListProps> = ({
 }) => {
   return (
     <Box>
-      <Stack direction='row' justifyContent='space-between' alignItems='center' sx={{ mb: 2 }}>
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        spacing={1}
+        justifyContent='space-between'
+        alignItems={{ xs: 'flex-start', sm: 'center' }}
+        sx={{ mb: 2 }}
+      >
         <Typography variant='subtitle1'>Этапы круга</Typography>
-        <Button variant='outlined' onClick={onAddStage} disabled={isRunning}>
+        <Button
+          variant='outlined'
+          onClick={onAddStage}
+          disabled={isRunning}
+          sx={{ alignSelf: { xs: 'stretch', sm: 'auto' } }}
+        >
           Добавить этап
         </Button>
       </Stack>
-
       <Stack spacing={2}>
         {stages.map((stage) => (
           <StageItem

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Box, IconButton, Paper, Stack, TextField } from '@mui/material';
+import { Box, IconButton, Paper, Stack, TextField, useMediaQuery, useTheme } from '@mui/material';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -42,12 +42,6 @@ const toSeconds = (hStr: string, mStr: string, sStr: string) => {
   return h * 3600 + m * 60 + s;
 };
 
-const formatTwoDigits = (raw: string) => raw.replace(/\D/g, '').slice(0, 2) || '00';
-
-const getNextSegment = (seg: Segment): Segment =>
-  seg === 'seconds' ? 'minutes' : seg === 'minutes' ? 'hours' : 'hours';
-
-// позиции сегментов в строке "HHh, MMmin, SSs"
 const SEGMENT_RANGES: Record<Segment, { start: number; end: number }> = {
   hours: { start: 0, end: 2 },
   minutes: { start: 5, end: 7 },
@@ -77,6 +71,9 @@ export const StageItem: React.FC<StageItemProps> = ({
 
   const timeRef = useRef<HTMLInputElement | null>(null);
 
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   // при внешнем изменении duration (пресеты и т.п.) — синкаем строки
   useEffect(() => {
     const h = hours.toString().padStart(2, '0');
@@ -95,7 +92,6 @@ export const StageItem: React.FC<StageItemProps> = ({
     const input = timeRef.current;
     if (!input) return;
     const { start, end } = SEGMENT_RANGES[seg];
-    // чуть позже, чтобы React успел отрендерить value
     setTimeout(() => {
       input.focus();
       input.setSelectionRange(start, end);
@@ -141,10 +137,7 @@ export const StageItem: React.FC<StageItemProps> = ({
 
     const key = e.key;
 
-    // Tab позволяем, остальное контролируем вручную
-    if (key === 'Tab') {
-      return;
-    }
+    if (key === 'Tab') return;
 
     if (/^[0-9]$/.test(key)) {
       e.preventDefault();
@@ -174,7 +167,7 @@ export const StageItem: React.FC<StageItemProps> = ({
       applyDuration(h, m, s);
 
       if (base.length + 1 >= 2) {
-        const nextSeg = getNextSegment(activeSegment);
+        const nextSeg = activeSegment === 'hours' ? 'minutes' : activeSegment === 'minutes' ? 'seconds' : 'seconds';
         if (nextSeg !== activeSegment) {
           focusSegment(nextSeg);
         }
@@ -206,9 +199,10 @@ export const StageItem: React.FC<StageItemProps> = ({
       return;
     }
 
-    // Всё остальное блокируем, чтобы не ломать шаблон
     e.preventDefault();
   };
+
+  // ---------- РЕНДЕР ----------
 
   return (
     <Box
@@ -230,69 +224,135 @@ export const StageItem: React.FC<StageItemProps> = ({
           backgroundColor: isDragging && !isRunning ? 'rgba(0,0,0,0.04)' : 'inherit',
         }}
       >
-        <Stack direction='row' spacing={2} alignItems='center'>
-          <DragIndicatorIcon
-            sx={{
-              color: 'text.secondary',
-              cursor: isRunning ? 'default' : 'grab',
-            }}
-          />
+        {isMobile ? (
+          // ---------- МОБИЛЬНЫЙ ЛЕЙАУТ ----------
+          <Stack spacing={1.5}>
+            {/* строка 1 — иконка + название */}
+            <Stack direction='row' spacing={1} alignItems='center'>
+              <DragIndicatorIcon
+                sx={{
+                  color: 'text.secondary',
+                  cursor: isRunning ? 'default' : 'grab',
+                }}
+              />
+              <TextField
+                label='Название'
+                size='small'
+                value={stage.name}
+                onChange={(e) => onStageChange(stage.id, 'name', e.target.value)}
+                disabled={isRunning}
+                sx={{ flex: 1 }}
+              />
+            </Stack>
 
-          {/* Название этапа */}
-          <TextField
-            label='Название'
-            size='small'
-            value={stage.name}
-            onChange={(e) => onStageChange(stage.id, 'name', e.target.value)}
-            disabled={isRunning}
-            sx={{ flex: 2 }}
-          />
+            {/* строка 2 — длительность, цвет, звук, кнопки */}
+            <Stack spacing={1}>
+              <TextField
+                label='Длительность'
+                size='small'
+                value={displayValue}
+                inputRef={timeRef}
+                onFocus={handleTimeFocus}
+                onClick={handleTimeClick}
+                onBlur={handleTimeBlur}
+                onKeyDown={handleTimeKeyDown}
+                onChange={() => {}}
+                disabled={isRunning}
+                fullWidth
+                sx={{ fontVariantNumeric: 'tabular-nums' }}
+              />
 
-          {/* Один инпут времени: 01h, 05min, 10s */}
-          <TextField
-            label='Длительность'
-            size='small'
-            value={displayValue}
-            inputRef={timeRef}
-            onFocus={handleTimeFocus}
-            onClick={handleTimeClick}
-            onBlur={handleTimeBlur}
-            onKeyDown={handleTimeKeyDown}
-            onChange={() => {}}
-            disabled={isRunning}
-            sx={{ flex: 2, fontVariantNumeric: 'tabular-nums' }}
-          />
+              <Stack direction='row' spacing={1}>
+                <Box sx={{ flex: 1 }}>
+                  <ColorSelect
+                    value={stage.color}
+                    onChange={(value) => onStageChange(stage.id, 'color', value)}
+                    disabled={isRunning}
+                    size='small'
+                    fullWidth
+                  />
+                </Box>
+                <Box sx={{ flex: 1 }}>
+                  <SoundSelect
+                    value={stage.sound ?? SoundEffect.NONE}
+                    onChange={(value) => onStageChange(stage.id, 'sound', value)}
+                    disabled={isRunning}
+                    fullWidth
+                  />
+                </Box>
+              </Stack>
 
-          {/* Цвет */}
-          <Box sx={{ flex: 1 }}>
-            <ColorSelect
-              value={stage.color}
-              onChange={(value) => onStageChange(stage.id, 'color', value)}
-              disabled={isRunning}
+              <Stack direction='row' spacing={0.5} justifyContent='flex-end'>
+                <IconButton size='small' onClick={() => onDuplicateStage(stage.id)} disabled={isRunning}>
+                  <ContentCopyIcon fontSize='small' />
+                </IconButton>
+                <IconButton size='small' color='error' onClick={() => onDeleteStage(stage.id)} disabled={isRunning}>
+                  <DeleteIcon fontSize='small' />
+                </IconButton>
+              </Stack>
+            </Stack>
+          </Stack>
+        ) : (
+          // ---------- ДЕСКТОПНЫЙ ЛЕЙАУТ (как было) ----------
+          <Stack direction='row' spacing={2} alignItems='center'>
+            <DragIndicatorIcon
+              sx={{
+                color: 'text.secondary',
+                cursor: isRunning ? 'default' : 'grab',
+              }}
+            />
+
+            <TextField
+              label='Название'
               size='small'
-              fullWidth
-            />
-          </Box>
-
-          <Box sx={{ flex: 1 }}>
-            <SoundSelect
-              value={stage.sound ?? SoundEffect.NONE}
-              onChange={(value) => onStageChange(stage.id, 'sound', value)}
+              value={stage.name}
+              onChange={(e) => onStageChange(stage.id, 'name', e.target.value)}
               disabled={isRunning}
-              fullWidth
+              sx={{ flex: 2 }}
             />
-          </Box>
 
-          {/* Дублировать */}
-          <IconButton size='small' onClick={() => onDuplicateStage(stage.id)} disabled={isRunning}>
-            <ContentCopyIcon fontSize='small' />
-          </IconButton>
+            <TextField
+              label='Длительность'
+              size='small'
+              value={displayValue}
+              inputRef={timeRef}
+              onFocus={handleTimeFocus}
+              onClick={handleTimeClick}
+              onBlur={handleTimeBlur}
+              onKeyDown={handleTimeKeyDown}
+              onChange={() => {}}
+              disabled={isRunning}
+              sx={{ flex: 2, fontVariantNumeric: 'tabular-nums' }}
+            />
 
-          {/* Удалить */}
-          <IconButton size='small' color='error' onClick={() => onDeleteStage(stage.id)} disabled={isRunning}>
-            <DeleteIcon fontSize='small' />
-          </IconButton>
-        </Stack>
+            <Box sx={{ flex: 1 }}>
+              <ColorSelect
+                value={stage.color}
+                onChange={(value) => onStageChange(stage.id, 'color', value)}
+                disabled={isRunning}
+                size='small'
+                fullWidth
+              />
+            </Box>
+
+            <Box sx={{ flex: 1 }}>
+              <SoundSelect
+                value={stage.sound ?? SoundEffect.NONE}
+                onChange={(value) => onStageChange(stage.id, 'sound', value)}
+                disabled={isRunning}
+                fullWidth
+              />
+            </Box>
+
+            <IconButton size='small' onClick={() => onDuplicateStage(stage.id)} disabled={isRunning}>
+              <ContentCopyIcon fontSize='small' />
+            </IconButton>
+
+            <IconButton size='small' color='error' onClick={() => onDeleteStage(stage.id)} disabled={isRunning}>
+              <DeleteIcon fontSize='small' />
+            </IconButton>
+          </Stack>
+        )}
       </Paper>
     </Box>
   );

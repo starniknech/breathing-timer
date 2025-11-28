@@ -12,6 +12,8 @@ import {
   Stack,
   TextField,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -48,6 +50,9 @@ export const PresetSection: React.FC<PresetSectionProps> = ({
   const [presetName, setPresetName] = useState('');
   const [presetColor, setPresetColor] = useState<ColorEnum>(presets[0]?.color ?? ('' as ColorEnum));
   const [editingPresetId, setEditingPresetId] = useState<string | null>(null);
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const handlePresetSelectChange = (value: string) => {
     if (!value) {
@@ -107,8 +112,13 @@ export const PresetSection: React.FC<PresetSectionProps> = ({
           Пресеты
         </Typography>
 
-        <Stack direction='row' spacing={2} alignItems='center' justifyContent='space-between'>
-          <Box sx={{ flex: 1, maxWidth: 300 }}>
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={1.5}
+          alignItems={{ xs: 'stretch', sm: 'center' }}
+          justifyContent='space-between'
+        >
+          <Box sx={{ flex: 1, maxWidth: { xs: '100%', sm: 300 } }}>
             <Select
               size='small'
               value={selectedPresetId ?? ''}
@@ -143,7 +153,13 @@ export const PresetSection: React.FC<PresetSectionProps> = ({
             </Select>
           </Box>
 
-          <Stack direction='row' spacing={1} alignItems='center' sx={{ flexShrink: 0 }}>
+          <Stack
+            direction='row'
+            spacing={1}
+            alignItems='center'
+            justifyContent={{ xs: 'flex-end', sm: 'flex-start' }}
+            sx={{ mt: { xs: 1, sm: 0 }, flexWrap: 'wrap' }}
+          >
             <IconButton size='medium' onClick={openEditPresetDialog} disabled={!selectedPresetId}>
               <EditIcon fontSize='medium' />
             </IconButton>
@@ -153,7 +169,17 @@ export const PresetSection: React.FC<PresetSectionProps> = ({
             <IconButton color='error' size='medium' onClick={handleDeletePresetClick} disabled={!selectedPresetId}>
               <DeleteIcon fontSize='medium' />
             </IconButton>
-            <Button variant='outlined' size='medium' startIcon={<AddIcon />} onClick={openCreatePresetDialog}>
+            <Button
+              variant='outlined'
+              size={isMobile ? 'small' : 'medium'}
+              startIcon={<AddIcon />}
+              onClick={openCreatePresetDialog}
+              sx={{
+                mt: { xs: 1, sm: 0 },
+                whiteSpace: 'nowrap',
+              }}
+              fullWidth={isMobile}
+            >
               ДОБАВИТЬ ПРЕСЕТ
             </Button>
           </Stack>
