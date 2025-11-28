@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Box, CssBaseline, Fab } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import type { PaletteMode } from '@mui/material';
@@ -14,10 +14,9 @@ import {
   LOCAL_STORAGE_KEY,
   THEME_KEY,
   PRESETS_STORAGE_KEY,
-  loadInitialConfig,
-  loadInitialPresets,
-} from './constants/breathing';
+} from './constants/constants';
 import { playSound } from './utils/soundPlayer';
+import { loadInitialConfig, loadInitialPresets } from './utils/preloadInitialConfigs';
 
 const initialConfig = loadInitialConfig();
 const initialPresets = loadInitialPresets();

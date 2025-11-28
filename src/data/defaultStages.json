@@ -1,0 +1,16 @@
+[
+  {
+    "id": "inhale-4",
+    "name": "Вдох",
+    "duration": 4,
+    "color": "purple",
+    "sound": "none"
+  },
+  {
+    "id": "exhale-7",
+    "name": "Выдох",
+    "duration": 7,
+    "color": "green",
+    "sound": "none"
+  }
+]

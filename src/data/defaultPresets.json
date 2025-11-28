@@ -1,0 +1,162 @@
+[
+  {
+    "id": "preset-basic-4-7",
+    "name": "4–7 расслабление",
+    "color": "purple",
+    "rounds": 5,
+    "stages": [
+      { "id": "p1-inhale-4", "name": "Вдох", "duration": 4, "color": "purple" },
+      { "id": "p1-exhale-7", "name": "Выдох", "duration": 7, "color": "green" }
+    ]
+  },
+  {
+    "id": "preset-4-7-8",
+    "name": "4–7–8 сон",
+    "color": "teal",
+    "rounds": 4,
+    "stages": [
+      { "id": "p2-inhale-4", "name": "Вдох", "duration": 4, "color": "blue" },
+      { "id": "p2-hold-7", "name": "Задержка", "duration": 7, "color": "amber" },
+      { "id": "p2-exhale-8", "name": "Выдох", "duration": 8, "color": "green" }
+    ]
+  },
+  {
+    "id": "preset-box-4",
+    "name": "Box 4–4–4–4",
+    "color": "amber",
+    "rounds": 4,
+    "stages": [
+      { "id": "p3-inhale-4", "name": "Вдох", "duration": 4, "color": "blue" },
+      { "id": "p3-hold-4-1", "name": "Задержка", "duration": 4, "color": "amber" },
+      { "id": "p3-exhale-4", "name": "Выдох", "duration": 4, "color": "green" },
+      { "id": "p3-hold-4-2", "name": "Задержка", "duration": 4, "color": "amber" }
+    ]
+  },
+  {
+    "id": "preset-1764278668199-0z2a8828rzo",
+    "name": "Рабочий блок 90 на 30",
+    "color": "purple",
+    "rounds": 4,
+    "stages": [
+      {
+        "id": "p2-inhale-4-5ecvxaa3d1n",
+        "name": "Работа",
+        "duration": 5400,
+        "color": "purple"
+      },
+      {
+        "id": "p2-hold-7-zd9x7q7fq6",
+        "name": "Отдых",
+        "duration": 1800,
+        "color": "green"
+      }
+    ]
+  },
+  {
+    "id": "preset-1764326392533-dt00cne6l8q",
+    "name": "Тренировка пресса",
+    "color": "green",
+    "rounds": 1,
+    "stages": [
+      {
+        "id": "p2-inhale-4-5ecvxaa3d1n-vbtkqghk1dr",
+        "name": "Касания колен",
+        "duration": 40,
+        "color": "green",
+        "sound": "sound3"
+      },
+      {
+        "id": "p2-hold-7-zd9x7q7fq6-mnn32n3wle",
+        "name": "Ножницы",
+        "duration": 40,
+        "color": "green",
+        "sound": "sound3"
+      },
+      {
+        "id": "1764326111832-ah0ujq5ukq",
+        "name": "Хлопок под коленями",
+        "duration": 40,
+        "color": "green",
+        "sound": "sound3"
+      },
+      {
+        "id": "1764326140239-r512sb8q3q",
+        "name": "Русские скручивания",
+        "duration": 40,
+        "color": "green",
+        "sound": "sound3"
+      },
+      {
+        "id": "1764326179422-q1ss1qsl06t",
+        "name": "Лодочка",
+        "duration": 40,
+        "color": "green",
+        "sound": "sound3"
+      },
+      {
+        "id": "1764326213025-glzwx7kn2ng",
+        "name": "Отдых",
+        "duration": 50,
+        "color": "orange",
+        "sound": "none"
+      },
+      {
+        "id": "1764326233685-mlakauf31ts",
+        "name": "Касания пяток",
+        "duration": 40,
+        "color": "green",
+        "sound": "sound3"
+      },
+      {
+        "id": "1764326259534-sz2k3t8cbqi",
+        "name": "Прямые поднятия ног",
+        "duration": 40,
+        "color": "green",
+        "sound": "sound3"
+      },
+      {
+        "id": "1764326299826-3btxut9j282",
+        "name": "Касание пальцев",
+        "duration": 40,
+        "color": "green",
+        "sound": "sound3"
+      },
+      {
+        "id": "1764326341599-g02h6ra5vsp",
+        "name": "Радуга",
+        "duration": 40,
+        "color": "green",
+        "sound": "sound3"
+      },
+      {
+        "id": "1764326347703-k31bgql9j1",
+        "name": "Велосипедик",
+        "duration": 40,
+        "color": "green",
+        "sound": "sound1"
+      }
+    ]
+  },
+  {
+    "id": "preset-1764327329684-m9mv9iid6t",
+    "name": "Активность 25 на 5",
+    "color": "pink",
+    "rounds": 4,
+    "stages": [
+      {
+        "id": "p2-inhale-4-5ecvxaa3d1n-glx1mfrfgjq-95cnka7x0wa",
+        "name": "Активность",
+        "duration": 1500,
+        "color": "pink",
+        "sound": "sound1"
+      },
+      {
+        "id": "p2-hold-7-zd9x7q7fq6-3z2hdvw3057-o4g7uasyswb",
+        "name": "Отдых",
+        "duration": 300,
+        "color": "blue",
+        "sound": "sound2"
+      }
+    ]
+  }
+]

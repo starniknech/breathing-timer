@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Divider, Drawer, TextField, Typography } from '@mui/material';
+import { Box, Divider, Drawer, TextField, Typography, useMediaQuery, useTheme, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 import type { Stage, Preset, ColorEnum } from '../../types/breathing';
 import { PresetSection } from './PresetSection';
@@ -48,29 +49,27 @@ export const BreathingDrawer: React.FC<BreathingDrawerProps> = ({
   onDeletePreset,
 }) => {
   const [draggingId, setDraggingId] = useState<string | null>(null);
-
-  // ширина дравера
   const [drawerWidth, setDrawerWidth] = useState<number>(520);
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    setDrawerWidth(window.innerWidth * 0.52); // стартовые ~52% экрана
-  }, []);
+    if (isMobile) return;
+    setDrawerWidth(window.innerWidth * 0.52);
+  }, [isMobile]);
 
-  // ------------ resize слева у ПРАВОГО дравера ------------
   const handleResizeMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (isMobile) return;
     event.preventDefault();
 
     const handleMouseMove = (e: MouseEvent) => {
       const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920;
-
       const minWidth = viewportWidth * 0.3;
       const maxWidth = viewportWidth * 0.9;
-
-      // дравер прижат к правому краю → ширина = расстояние от правого края до курсора
       const candidate = viewportWidth - e.clientX;
       const nextWidth = Math.min(maxWidth, Math.max(minWidth, candidate));
-
       setDrawerWidth(nextWidth);
     };
 
@@ -83,7 +82,6 @@ export const BreathingDrawer: React.FC<BreathingDrawerProps> = ({
     document.addEventListener('mouseup', handleMouseUp);
   };
 
-  // ------------ drag & drop этапов ------------
   const handleDragStart = (id: string) => {
     if (isRunning) return;
     setDraggingId(id);
@@ -119,35 +117,62 @@ export const BreathingDrawer: React.FC<BreathingDrawerProps> = ({
       ModalProps={{ keepMounted: true }}
       sx={{
         '& .MuiDrawer-paper': {
-          width: drawerWidth,
-          right: 0, // жёстко прижимаем к правому краю
-          left: 'auto', // и убираем привязку к левому
+          width: isMobile ? '100vw' : drawerWidth,
+          maxWidth: '100vw',
+          right: 0,
+          left: 'auto',
           position: 'fixed',
         },
       }}
     >
-      <Box sx={{ position: 'relative', height: '100%' }}>
-        {/* полоса-резайзер именно со стороны контента (левая грань дравера) */}
-        <Box
-          onMouseDown={handleResizeMouseDown}
-          sx={{
-            position: 'absolute',
-            left: 0,
-            top: 0,
-            bottom: 0,
-            width: 6,
-            cursor: 'col-resize',
-            zIndex: 1,
-            '&:hover': {
-              bgcolor: 'rgba(0,0,0,0.08)',
-            },
-          }}
-        />
+      <Box
+        sx={{
+          position: 'relative',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        {!isMobile && (
+          <Box
+            onMouseDown={handleResizeMouseDown}
+            sx={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              bottom: 0,
+              width: 6,
+              cursor: 'col-resize',
+              zIndex: 1,
+              '&:hover': {
+                bgcolor: 'rgba(0,0,0,0.08)',
+              },
+            }}
+          />
+        )}
 
-        <Box sx={{ p: 3, height: '100%', boxSizing: 'border-box' }}>
-          <Typography variant='h6' gutterBottom>
-            Настройки таймера
-          </Typography>
+        <Box
+          sx={{
+            p: isMobile ? 2 : 3,
+            height: '100%',
+            boxSizing: 'border-box',
+            overflowY: 'auto',
+          }}
+        >
+          {/* заголовок + крестик */}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              mb: 2,
+            }}
+          >
+            <Typography variant='h6'>Настройки таймера</Typography>
+            <IconButton onClick={onClose} size='small'>
+              <CloseIcon sx={{ color: 'text.secondary' }} />
+            </IconButton>
+          </Box>
 
           <PresetSection
             presets={presets}
